@@ -1,0 +1,5 @@
+steps:
+  - label: ":sparkles: Linting plugin"
+    plugins:
+      plugin-linter#v2.0.0:
+        id: loosolab/conda
