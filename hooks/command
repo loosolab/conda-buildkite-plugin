@@ -1,0 +1,35 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "--- :snake: Providing conda environment"
+
+if [ -z ${BUILDKITE_PLUGIN_CONDA_ENV+x} ]; then
+  CONDA_ENV=${BUILDKITE_PLUGIN_CONDA_ENV}
+else
+  if [ -e "environment.yml" ]; then
+    CONDA_ENV_FILE="environment.yml"
+    CONDA_ENV=$(grep 'name' $CONDA_ENV_FILE | cut -f2 -d ' ')
+  fi
+  if [ -e ".buildkite/environment.yml" ]; then
+    CONDA_ENV_FILE=".buildkite/environment.yml"
+    CONDA_ENV=$(grep 'name' $CONDA_ENV_FILE | cut -f2 -d ' ')
+  fi
+fi
+
+if [ -z ${CONDA_ENV+x} ]; then
+  echo "No environment specified and no environment.yml file found."
+  exit 1
+else
+  conda activate $CONDA_ENV
+  if [ $? -eq 0 ]; then
+    :
+  else
+    if [ -z ${CONDA_ENV_FILE+x} ]; then
+      echo "Cannot create environment, missing environment.yml file."
+      exit 1
+    else
+      conda env create -f $CONDA_ENV_FILE
+      conda activate $CONDA_ENV
+    fi
+  fi
+fi

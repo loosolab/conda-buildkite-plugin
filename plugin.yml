@@ -1,0 +1,9 @@
+name: conda
+description: Run commands in conda environments.
+author: Jens Preussner<jens.preussner@mpi-bn.mpg.de>
+requirements:
+  - conda
+configuration:
+  properties:
+    env:
+      type: string
