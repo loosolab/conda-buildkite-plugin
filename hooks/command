@@ -1,7 +1,16 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "--- :snake: Providing conda environment"
+echo "--- :snake: Providing conda command"
+
+if [ -z ${CONDA_ROOT+x} ]; then
+  . ${CONDA_ROOT}/etc/profile.d/conda.sh
+  conda activate
+else
+  echo "Can't find conda root directory."
+  exit 1
+
+echo "--- :snake: Providing job environment"
 
 if [ -z ${BUILDKITE_PLUGIN_CONDA_ENV+x} ]; then
   CONDA_ENV=${BUILDKITE_PLUGIN_CONDA_ENV}
