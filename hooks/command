@@ -9,6 +9,7 @@ if [ -z ${CONDA_ROOT+x} ]; then
 else
   echo "Can't find conda root directory."
   exit 1
+fi
 
 echo "--- :snake: Providing job environment"
 
