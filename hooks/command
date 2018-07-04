@@ -37,11 +37,8 @@ else
       exit 1
     else
       echo "Creating environment $CONDA_ENV from $CONDA_ENV_FILE."
-      conda env create -f $CONDA_ENV_FILE
-      if [ $? -eq 0 ]; then
-        exit $?
-      fi
-      conda activate $CONDA_ENV
+      conda env create --force -f $CONDA_ENV_FILE || { echo "Failed to create environment."; exit 1; }
+      conda activate $CONDA_ENV || { echo "Failed to activate new environment."; exit 1; }
     fi
   fi
 fi
