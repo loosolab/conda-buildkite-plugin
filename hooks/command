@@ -36,7 +36,11 @@ else
       echo "Cannot create environment, missing environment.yml file."
       exit 1
     else
+      echo "Creating environment $CONDA_ENV from $CONDA_ENV_FILE."
       conda env create -f $CONDA_ENV_FILE
+      if [ $? -eq 0 ]; then
+        exit $?
+      fi
       conda activate $CONDA_ENV
     fi
   fi
