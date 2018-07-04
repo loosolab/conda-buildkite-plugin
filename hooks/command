@@ -12,8 +12,6 @@ else
 fi
 
 if [ -z ${BUILDKITE_PLUGIN_CONDA_ENV+x} ]; then
-  CONDA_ENV=${BUILDKITE_PLUGIN_CONDA_ENV}
-else
   if [ -e "environment.yml" ]; then
     CONDA_ENV_FILE="environment.yml"
     CONDA_ENV=$(grep 'name' $CONDA_ENV_FILE | cut -f2 -d ' ')
@@ -22,6 +20,8 @@ else
     CONDA_ENV_FILE=".buildkite/environment.yml"
     CONDA_ENV=$(grep 'name' $CONDA_ENV_FILE | cut -f2 -d ' ')
   fi
+else
+  CONDA_ENV=${BUILDKITE_PLUGIN_CONDA_ENV}
 fi
 
 if [ -z ${CONDA_ENV+x} ]; then
