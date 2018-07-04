@@ -3,6 +3,8 @@ set -euo pipefail
 
 echo "--- :snake: Providing conda command"
 
+printenv
+
 if [ -z ${CONDA_ROOT+x} ]; then
   . ${CONDA_ROOT}/etc/profile.d/conda.sh
   conda activate
