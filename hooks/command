@@ -49,3 +49,4 @@ if type -P ${BUILDKITE_COMMAND%% *} 2>/dev/null; then
   eval '${BUILDKITE_COMMAND}'
 else
   eval './${BUILDKITE_COMMAND}'
+fi
