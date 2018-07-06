@@ -43,6 +43,9 @@ else
   fi
 fi
 
-echo "--- :terminal: Running command in the $CONDA_ENV environment"
+echo "--- :terminal: Running commands in the $CONDA_ENV environment"
 
-${BUILDKITE_COMMAND}
+if type -P ${BUILDKITE_COMMAND%% *} 2>/dev/null; then
+  eval '${BUILDKITE_COMMAND}'
+else
+  eval './${BUILDKITE_COMMAND}'
