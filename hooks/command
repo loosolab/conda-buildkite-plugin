@@ -1,46 +1,44 @@
 #!/bin/bash
 set -uo pipefail
 
+DIR="$(cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd)"
+
+# shellcheck source=lib/shared.bash
+. "$DIR/../lib/shared.bash"
+
 echo "--- :snake: Providing conda and job environment"
 
 if [ -z ${CONDA_ROOT+x} ]; then
-  echo "Can't find conda root directory. Please set CONDA_ROOT to the local conda root directory."
+  echo "Can't find conda root directory. Please set CONDA_ROOT to the local conda root directory on ${BUILDKITE_AGENT_NAME}."
   exit 1
 else
   . ${CONDA_ROOT}/etc/profile.d/conda.sh
   conda activate
 fi
 
-if [ -z ${BUILDKITE_PLUGIN_CONDA_ENV+x} ]; then
-  if [ -e "environment.yml" ]; then
-    CONDA_ENV_FILE="environment.yml"
-    CONDA_ENV=$(grep 'name' $CONDA_ENV_FILE | cut -f2 -d ' ')
-  fi
-  if [ -e ".buildkite/environment.yml" ]; then
-    CONDA_ENV_FILE=".buildkite/environment.yml"
-    CONDA_ENV=$(grep 'name' $CONDA_ENV_FILE | cut -f2 -d ' ')
-  fi
+# Default name is pipeline-slug
+CONDA_ENV=$BUILDKITE_PIPELINE_SLUG
+
+if [ -e $(plugin_read_config ENVIRONMENT) ]; then
+  CONDA_ENV_FILE=${BUILDKITE_PLUGIN_CONDA_ENVIRONMENT}
 else
-  CONDA_ENV=${BUILDKITE_PLUGIN_CONDA_ENV}
+  echo "Environment definition file not found: ${BUILDKITE_PLUGIN_CONDA_ENVIRONMENT}"
+  exit 1
 fi
 
-if [ -z ${CONDA_ENV+x} ]; then
-  echo "No environment specified and no environment.yml file found."
-  exit 1
+# Handle env update
+if [[ "$(plugin_read_config UPDATE "true")" == "true" ]]; then
+  echo "Updating environment $CONDA_ENV."
+  conda env update --prune -n ${CONDA_ENV} -f ${CONDA_ENV_FILE}
+fi
+
+conda activate $CONDA_ENV
+if [ $? -eq 0 ]; then
+  :
 else
-  conda activate $CONDA_ENV
-  if [ $? -eq 0 ]; then
-    :
-  else
-    if [ -z ${CONDA_ENV_FILE+x} ]; then
-      echo "Cannot create environment, missing environment.yml file."
-      exit 1
-    else
-      echo "Creating environment $CONDA_ENV from $CONDA_ENV_FILE."
-      conda env create --force -f $CONDA_ENV_FILE || { echo "Failed to create environment."; exit 1; }
-      conda activate $CONDA_ENV || { echo "Failed to activate new environment."; exit 1; }
-    fi
-  fi
+  echo "Creating environment $CONDA_ENV from $CONDA_ENV_FILE."
+  conda env create --force -n $CONDA_ENV -f $CONDA_ENV_FILE || { echo "Failed to create environment."; exit 1; }
+  conda activate $CONDA_ENV || { echo "Failed to activate new environment."; exit 1; }
 fi
 
 echo "--- :terminal: Running commands in the $CONDA_ENV environment"
