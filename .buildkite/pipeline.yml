@@ -1,4 +1,11 @@
 steps:
+  - label: ":shell: Performing shell check"
+    plugins:
+      shellcheck#v1.0.1:
+        files:
+          - hooks/**
+          - lib/**
+          
   - label: ":sparkles: Linting plugin"
     plugins:
       plugin-linter#v2.0.0:

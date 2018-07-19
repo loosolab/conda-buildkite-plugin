@@ -28,7 +28,7 @@ fi
 
 # Handle env update
 if [[ "$(plugin_read_config UPDATE "true")" == "true" ]]; then
-  echo "Updating environment $CONDA_ENV."
+  echo "Auto-Update environment $CONDA_ENV."
   conda env update --prune -n ${CONDA_ENV} -f ${CONDA_ENV_FILE}
 fi
 
