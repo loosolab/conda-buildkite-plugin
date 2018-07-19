@@ -18,7 +18,7 @@ else
 fi
 
 # Default name is pipeline-slug
-CONDA_ENV=$BUILDKITE_PIPELINE_SLUG
+CONDA_ENV="${BUILDKITE_PIPELINE_SLUG}-${BUILDKITE_BRANCH//:/_}"
 
 if [ -e "$(plugin_read_config ENVIRONMENT)" ]; then
   CONDA_ENV_FILE=${BUILDKITE_PLUGIN_CONDA_ENVIRONMENT}
