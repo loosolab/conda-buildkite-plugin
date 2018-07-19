@@ -12,14 +12,15 @@ if [ -z ${CONDA_ROOT+x} ]; then
   echo "Can't find conda root directory. Please set CONDA_ROOT to the local conda root directory on ${BUILDKITE_AGENT_NAME}."
   exit 1
 else
-  . ${CONDA_ROOT}/etc/profile.d/conda.sh
+  # shellcheck disable=SC1090
+  . "${CONDA_ROOT}/etc/profile.d/conda.sh"
   conda activate
 fi
 
 # Default name is pipeline-slug
 CONDA_ENV=$BUILDKITE_PIPELINE_SLUG
 
-if [ -e $(plugin_read_config ENVIRONMENT) ]; then
+if [ -e "$(plugin_read_config ENVIRONMENT)" ]; then
   CONDA_ENV_FILE=${BUILDKITE_PLUGIN_CONDA_ENVIRONMENT}
 else
   echo "Environment definition file not found: ${BUILDKITE_PLUGIN_CONDA_ENVIRONMENT}"
@@ -29,16 +30,16 @@ fi
 # Handle env update
 if [[ "$(plugin_read_config UPDATE "true")" == "true" ]]; then
   echo "Auto-Update environment $CONDA_ENV."
-  conda env update --prune -n ${CONDA_ENV} -f ${CONDA_ENV_FILE}
+  conda env update --prune -n "${CONDA_ENV}" -f "${CONDA_ENV_FILE}"
 fi
 
-conda activate $CONDA_ENV
-if [ $? -eq 0 ]; then
+
+if conda activate "$CONDA_ENV"; then
   :
 else
   echo "Creating environment $CONDA_ENV from $CONDA_ENV_FILE."
-  conda env create --force -n $CONDA_ENV -f $CONDA_ENV_FILE || { echo "Failed to create environment."; exit 1; }
-  conda activate $CONDA_ENV || { echo "Failed to activate new environment."; exit 1; }
+  conda env create --force -n "$CONDA_ENV" -f "$CONDA_ENV_FILE" || { echo "Failed to create environment."; exit 1; }
+  conda activate "$CONDA_ENV" || { echo "Failed to activate new environment."; exit 1; }
 fi
 
 echo "--- :terminal: Running commands in the $CONDA_ENV environment"

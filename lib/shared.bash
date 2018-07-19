@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Shorthand for reading env config
 function plugin_read_config() {
   local var="BUILDKITE_PLUGIN_CONDA_${1}"
