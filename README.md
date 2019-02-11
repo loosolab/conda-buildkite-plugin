@@ -6,9 +6,9 @@ Run commands in conda environments
 ```yml
 steps:
   - plugins:
-      loosolab/conda#v1.0.0:
-        environment: environment.yml
-        update: true
+      - loosolab/conda#v1.0.0:
+          environment: environment.yml
+          update: true
 ```
 
 ## Options
